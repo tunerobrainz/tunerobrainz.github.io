@@ -9,6 +9,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
         
         :root {
+            --red: #ff4757; --green: #2ed573; --yellow: #ffa502; --blue: #1e90ff;
+            
             /* NIGHT THEME (Default) */
             --bg-color: #0f0c29;
             --text-color: #ffffff;
@@ -16,13 +18,11 @@
             --glass-border: rgba(255, 255, 255, 0.15);
             --shadow-color: rgba(0,0,0,0.5);
             --dice-face: linear-gradient(145deg, #ffffff, #e6e6e6);
-            
-            --red: #ff4757; --green: #2ed573; --yellow: #ffa502; --blue: #1e90ff;
         }
 
         /* DAY THEME OVERRIDES */
         body.day-mode {
-            --bg-color: #87CEEB; /* Sky Blue */
+            --bg-color: #87CEEB;
             --text-color: #1e293b;
             --glass-bg: rgba(255, 255, 255, 0.55);
             --glass-border: rgba(255, 255, 255, 0.6);
@@ -61,7 +61,8 @@
             position: absolute; top: 15px; left: 15px;
             width: 90px; height: 90px; padding: 5px;
             display: flex; flex-direction: column; align-items: center;
-            z-index: 20; padding-top: max(5px, env(safe-area-inset-top));
+            z-index: 30; /* High Z to stay on top */
+            padding-top: max(5px, env(safe-area-inset-top));
         }
         #minimap-canvas { width: 100%; height: 100%; border-radius: 8px; opacity: 0.9; }
         
@@ -74,23 +75,23 @@
         .stat-val { font-weight: 700; color: #ffd700; }
         body.day-mode .stat-val { color: #d35400; }
 
-        /* THEME TOGGLE FAB (New) */
+        /* THEME TOGGLE FAB */
         #theme-fab {
-            position: absolute; top: 20px; right: 20px;
+            position: absolute; top: 15px; right: 15px;
             width: 45px; height: 45px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; cursor: pointer; z-index: 20;
+            font-size: 1.2rem; cursor: pointer; z-index: 30;
             padding-top: max(0px, env(safe-area-inset-top));
             transition: transform 0.3s;
         }
         #theme-fab:active { transform: scale(0.9); }
-        #theme-fab i { transition: transform 0.5s, opacity 0.5s; }
 
-        /* Player Badges */
+        /* PLAYER BADGES - PC Default */
         .badges-container { 
             display: flex; gap: 6px; position: absolute; top: 15px; left: 50%; 
             transform: translateX(-50%); z-index: 15;
             padding-top: env(safe-area-inset-top);
+            transition: top 0.3s;
         }
         .player-badge {
             display: flex; flex-direction: column; align-items: center;
@@ -104,14 +105,13 @@
         .player-badge.active[data-p="1"] { border-color: var(--green); }
         .player-badge.active[data-p="2"] { border-color: var(--yellow); }
         .player-badge.active[data-p="3"] { border-color: var(--blue); }
-        
         .p-icon { font-size: 1rem; margin-bottom: 2px; }
         .p-dots { display: flex; gap: 2px; }
         .dot { width: 5px; height: 5px; border-radius: 50%; background: #444; }
         .dot.home { background: #ffd700; box-shadow: 0 0 4px #ffd700; }
         body.day-mode .dot.home { background: #f1c40f; box-shadow: none; }
 
-        /* SETTINGS */
+        /* SETTINGS BTN */
         #settings-btn {
             position: absolute; bottom: 30px; right: 20px;
             width: 45px; height: 45px; border-radius: 50%;
@@ -127,7 +127,6 @@
         }
         #settings-menu.open { transform: scale(1); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
-        
         .toggle-switch {
             width: 40px; height: 20px; background: rgba(255,255,255,0.2);
             border-radius: 20px; position: relative; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
@@ -145,34 +144,50 @@
             font-weight: 700; cursor: pointer; margin-top: 5px; width: 100%;
         }
 
-        /* 3D DICE CSS */
+        /* --- 3D DICE & STATUS (MOBILE OPTIMIZED) --- */
         #dice-control-area {
-            position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+            position: absolute; 
+            bottom: 5%; /* Pushed to bottom to use empty space */
+            left: 50%; transform: translateX(-50%);
             width: 100px; height: 100px;
             display: flex; justify-content: center; align-items: center;
             pointer-events: none; z-index: 10; perspective: 600px;
+            padding-bottom: env(safe-area-inset-bottom);
         }
+
         #dice-scene {
-            width: 80px; height: 80px; position: relative; pointer-events: auto;
-            transform-style: preserve-3d; transition: transform 0.1s;
+            width: 80px; height: 80px;
+            position: relative; pointer-events: auto;
+            transform-style: preserve-3d;
+            transition: transform 0.1s;
         }
         #dice-scene:active { transform: scale(0.9); }
         #dice-scene.disabled { filter: grayscale(1); opacity: 0.6; pointer-events: none; }
+
         #cube {
-            width: 100%; height: 100%; position: absolute; transform-style: preserve-3d;
-            transform: translateZ(-40px); transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%; height: 100%; position: absolute;
+            transform-style: preserve-3d;
+            transform: translateZ(-40px);
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
         .cube-face {
-            position: absolute; width: 80px; height: 80px; background: var(--dice-face);
-            border: 1px solid #ccc; border-radius: 12px; display: flex; justify-content: center; align-items: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            position: absolute; width: 80px; height: 80px;
+            background: var(--dice-face);
+            /* Border removed to fix "horns" */
+            border-radius: 14px; 
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+            backface-visibility: hidden; /* Fix artifacts */
         }
+
         .face-dots { 
             display: grid; width: 60%; height: 60%; gap: 4px;
             grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
         }
         .d-point { background: #333; border-radius: 50%; width: 100%; height: 100%; }
         
+        /* Rotations */
         .face-1 { transform: rotateY(0deg) translateZ(40px); }
         .face-2 { transform: rotateY(90deg) translateZ(40px); }
         .face-3 { transform: rotateY(180deg) translateZ(40px); }
@@ -193,24 +208,31 @@
         
         #dice-shadow {
             position: absolute; width: 60px; height: 20px;
-            background: var(--shadow-color); filter: blur(8px);
+            background: var(--shadow-color); filter: blur(10px);
             border-radius: 50%; bottom: -40px; left: 10px;
             z-index: -1; transition: all 0.3s;
         }
         .rolling #dice-shadow { transform: scale(0.6); opacity: 0.3; }
 
-        /* STATUS & MODALS */
+        /* STATUS TEXT - Positioned above the low dice */
         #status-text {
-            position: absolute; bottom: calc(15% + 110px); left: 50%; transform: translateX(-50%);
-            padding: 8px 20px; border-radius: 50px; font-weight: 800; font-size: 1rem; letter-spacing: 1px;
+            position: absolute; 
+            bottom: calc(5% + 100px); /* Just above the dice container */
+            left: 50%; transform: translateX(-50%);
+            padding: 10px 25px; border-radius: 50px;
+            font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;
             text-align: center; white-space: nowrap; opacity: 0; transition: opacity 0.3s;
-            border: 1px solid var(--glass-border); text-shadow: 0 2px 4px var(--shadow-color); color: var(--text-color);
+            border: 1px solid var(--glass-border); text-shadow: 0 2px 4px var(--shadow-color);
+            color: var(--text-color);
+            z-index: 10;
+            margin-bottom: env(safe-area-inset-bottom);
         }
         #status-text.show { opacity: 1; }
 
+        /* SCREENS */
         #landing-screen {
             position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(10, 5, 30, 0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            background: rgba(10, 5, 30, 0.4); backdrop-filter: blur(4px);
             z-index: 100; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s;
         }
         .welcome-card { 
@@ -218,6 +240,7 @@
             animation: float 6s ease-in-out infinite; border: 1px solid rgba(255,255,255,0.3);
         }
         @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+        
         .game-title { 
             font-size: 3.5rem; font-weight: 900; margin-bottom: 10px; line-height: 1;
             background: linear-gradient(135deg, #fff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -246,13 +269,23 @@
         .rule-item { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; display:flex; gap:10px; }
         .rule-icon { color: #6C63FF; width: 20px; }
 
-        @media (max-width: 450px) {
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 600px) {
             .game-title { font-size: 2.8rem; }
             #stats-panel { top: 110px; }
+            
+            /* Push badges down on mobile to clear minimap */
+            .badges-container { top: 75px; } 
+            
+            /* Scale minimap slightly */
+            #minimap-container { width: 80px; height: 80px; }
+            
+            /* Dice is already at 5% bottom, text follows */
+            #status-text { bottom: calc(5% + 95px); font-size: 0.9rem; padding: 8px 15px; }
         }
     </style>
 </head>
-<body>
+<body onclick="startAudioEngine()">
 
     <canvas id="gameCanvas"></canvas>
 
@@ -296,6 +329,10 @@
             <div class="setting-row">
                 <span>Sound</span>
                 <div class="toggle-switch on" onclick="toggleSwitch('sound', this)"><div class="toggle-knob"></div></div>
+            </div>
+            <div class="setting-row">
+                <span>Day Mode</span>
+                <div class="toggle-switch" id="day-switch" onclick="toggleTheme(this)"><div class="toggle-knob"></div></div>
             </div>
             <button class="btn-restart" onclick="if(confirm('Restart Game?')) location.reload()"><i class="fas fa-redo"></i> NEW GAME</button>
         </div>
@@ -368,17 +405,20 @@
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let ctx;
 
-        function initAudio() {
-            if(!ctx) ctx = new AudioCtx();
-            if(ctx.state === 'suspended') ctx.resume();
-            playIntroMusic();
+        function startAudioEngine() {
+            if(!ctx) {
+                ctx = new AudioCtx();
+                playIntroMusic();
+            }
+            if(ctx.state === 'suspended') {
+                ctx.resume().then(() => playIntroMusic());
+            }
         }
 
         function playIntroMusic() {
             if(introInterval) return;
-            // Ethereal Intro Loop (Arpeggio)
             let noteIdx = 0;
-            const introNotes = [261.63, 329.63, 392.00, 493.88]; // Cmaj7
+            const introNotes = [261.63, 329.63, 392.00, 493.88]; 
             introInterval = setInterval(() => {
                 if(gameState !== 'MENU') { clearInterval(introInterval); return; }
                 if(soundEnabled && ctx) {
@@ -398,7 +438,6 @@
         const sfx = {
             roll: () => { 
                 if(!soundEnabled || !ctx) return;
-                // Noise burst for shaker
                 const bufferSize = ctx.sampleRate * 0.3;
                 const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
@@ -513,9 +552,7 @@
             animate();
         }
 
-        // SCENE GEN
         function createEnvironment() {
-            // STARS (Night)
             const geo = new THREE.BufferGeometry();
             const pos = [];
             for(let i=0; i<800; i++) pos.push((Math.random()-0.5)*80, Math.random()*40, (Math.random()-0.5)*80);
@@ -524,7 +561,6 @@
             stars = new THREE.Points(geo, mat);
             scene.add(stars);
 
-            // CLOUDS (Day)
             clouds = new THREE.Group();
             const cloudGeo = new THREE.SphereGeometry(1.5, 7, 7);
             const cloudMat = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.9});
@@ -541,7 +577,6 @@
                 clouds.add(c);
             }
             
-            // SUN (Day)
             const sunGeo = new THREE.SphereGeometry(4, 16, 16);
             const sunMat = new THREE.MeshBasicMaterial({color: 0xffaa00});
             sun = new THREE.Mesh(sunGeo, sunMat);
@@ -622,7 +657,6 @@
 
         // LOGIC
         function startGame() {
-            initAudio(); // UNLOCKS AUDIO ON TAP
             clearInterval(introInterval);
             document.getElementById('landing-screen').style.opacity = 0;
             document.getElementById('ui-layer').style.opacity = 1;
@@ -867,43 +901,24 @@
             if(type === 'stats') document.getElementById('stats-panel').style.display = isOn ? 'flex' : 'none';
             if(type === 'sound') soundEnabled = isOn;
         }
-        
-        // DEDICATED THEME FAB TOGGLE
         function toggleTheme(el) {
-            // Can be called by FAB or Switch
-            // Sync both controls
             const fab = document.getElementById('theme-fab');
             const icon = document.getElementById('theme-icon');
             const switchEl = document.getElementById('day-switch');
-            
             dayMode = !dayMode;
-            
-            // UI Updates
             if(dayMode) {
                 document.body.classList.add('day-mode');
-                icon.className = 'fas fa-sun';
-                icon.style.color = '#f1c40f';
+                icon.className = 'fas fa-sun'; icon.style.color = '#f1c40f';
                 if(switchEl) switchEl.classList.add('on');
             } else {
                 document.body.classList.remove('day-mode');
-                icon.className = 'fas fa-moon';
-                icon.style.color = '#ffffff';
+                icon.className = 'fas fa-moon'; icon.style.color = '#ffffff';
                 if(switchEl) switchEl.classList.remove('on');
             }
-            
-            // 3D Updates
             scene.fog = new THREE.FogExp2(dayMode ? 0x87CEEB : 0x0f0c29, dayMode ? 0.002 : 0.03);
-            if(dayMode) {
-                scene.remove(stars);
-                scene.add(clouds);
-                scene.add(sun);
-            } else {
-                scene.add(stars);
-                scene.remove(clouds);
-                scene.remove(sun);
-            }
+            if(dayMode) { scene.remove(stars); scene.add(clouds); scene.add(sun); }
+            else { scene.add(stars); scene.remove(clouds); scene.remove(sun); }
         }
-        
         function openRules() { document.getElementById('rules-modal').style.display = 'flex'; }
         function closeRules() { document.getElementById('rules-modal').style.display = 'none'; }
 
