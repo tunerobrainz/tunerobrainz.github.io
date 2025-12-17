@@ -10,10 +10,8 @@
         
         :root {
             /* NIGHT THEME (Default) */
-            --bg-color: #0f0c29;
-            --text-color: #ffffff;
-            --glass-bg: rgba(15, 23, 42, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --bg-color: #0f0c29; --text-color: #ffffff;
+            --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(255, 255, 255, 0.15);
             --shadow-color: rgba(0,0,0,0.5);
             
             --red: #ff4757; --green: #2ed573; --yellow: #ffa502; --blue: #1e90ff;
@@ -91,7 +89,8 @@
         .player-badge {
             display: flex; flex-direction: column; align-items: center;
             padding: 6px 8px; background: rgba(0,0,0,0.6); border-radius: 10px;
-            transition: all 0.3s; border: 2px solid transparent; min-width: 45px;
+            transition: all 0.3s; border: 2px solid transparent; min-width: 55px;
+            backdrop-filter: blur(5px);
         }
         body.day-mode .player-badge { background: rgba(255,255,255,0.7); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .player-badge.active { transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.2); background: rgba(255,255,255,0.15); }
@@ -100,11 +99,9 @@
         .player-badge.active[data-p="1"] { border-color: var(--green); }
         .player-badge.active[data-p="2"] { border-color: var(--yellow); }
         .player-badge.active[data-p="3"] { border-color: var(--blue); }
-        
         .p-icon { font-size: 1rem; margin-bottom: 2px; }
-        /* ADDED NAME SPAN FOR INPUT */
-        .p-name { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
-        .p-dots { display: flex; gap: 2px; }
+        .p-name { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; margin-top: 2px; text-transform: uppercase; }
+        .p-dots { display: flex; gap: 2px; margin-top:2px;}
         .dot { width: 5px; height: 5px; border-radius: 50%; background: #444; }
         .dot.home { background: #ffd700; box-shadow: 0 0 4px #ffd700; }
         body.day-mode .dot.home { background: #f1c40f; box-shadow: none; }
@@ -114,14 +111,14 @@
             position: absolute; bottom: 30px; right: 20px;
             width: 45px; height: 45px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; cursor: pointer; z-index: 60;
+            font-size: 1.2rem; cursor: pointer; z-index: 50;
             padding-bottom: env(safe-area-inset-bottom);
         }
         #settings-menu {
             position: absolute; bottom: 90px; right: 20px;
             width: 200px; padding: 15px; display: flex; flex-direction: column; gap: 12px;
             transform: scale(0); transform-origin: bottom right; transition: transform 0.3s ease;
-            z-index: 59;
+            z-index: 49;
         }
         #settings-menu.open { transform: scale(1); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
@@ -142,12 +139,13 @@
             font-weight: 700; cursor: pointer; margin-top: 5px; width: 100%;
         }
 
-        /* --- THREE.JS DICE CONTAINER --- */
+        /* --- THREE.JS DICE CONTAINER (Fixed Placement) --- */
         #dice-box {
             position: absolute;
             bottom: 20px; 
             left: 50%; transform: translateX(-50%);
             width: 120px; height: 120px;
+            /* Z-INDEX BOOST: Higher than Status Text (10) */
             z-index: 50; 
             pointer-events: auto;
             cursor: pointer;
@@ -158,10 +156,10 @@
             display: block;
         }
 
-        /* STATUS TEXT */
+        /* STATUS TEXT (Anchored above dice) */
         #status-text {
             position: absolute; 
-            bottom: 140px; 
+            bottom: 140px; /* Clearance for dice + padding */
             left: 50%; transform: translateX(-50%);
             padding: 8px 25px; border-radius: 50px;
             font-weight: 800; font-size: 1rem; letter-spacing: 1px;
@@ -176,7 +174,7 @@
         #landing-screen {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(10, 5, 30, 0.4); 
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(5px);
             z-index: 100; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s;
         }
         #name-modal { 
@@ -188,8 +186,9 @@
         .welcome-card { 
             text-align: center; padding: 40px; max-width: 450px; width: 85%;
             animation: float 6s ease-in-out infinite; 
-            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px; backdrop-filter: blur(10px);
+            overflow-y: auto; max-height: 90vh;
         }
         @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
         .game-title { 
@@ -208,7 +207,7 @@
         .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
         body.day-mode .btn-secondary { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color: #333; }
         .btn-start:active, .btn-secondary:active { transform: scale(0.95); }
-        
+
         .input-field {
             background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
             color: white; padding: 15px; border-radius: 12px; width: 100%;
@@ -226,16 +225,19 @@
         body.day-mode .modal-title { color: #d35400; }
         .rule-item { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; display:flex; gap:10px; }
         .rule-icon { color: #6C63FF; width: 20px; }
+        
+        .about-text a:hover { color: white !important; }
 
-        /* MOBILE FIXES */
         @media (max-width: 600px) {
             .game-title { font-size: 2.8rem; }
             #stats-panel { top: 110px; }
-            .badges-container { top: 85px; } 
+            /* Push badges down so they don't overlap Minimap */
+            .badges-container { top: 90px; } 
             #minimap-container { width: 80px; height: 80px; }
-            /* SHIFT TO BOTTOM */
-            #dice-box { bottom: 2%; }
-            #status-text { bottom: calc(2% + 110px); }
+            
+            /* PUSH TO ABSOLUTE BOTTOM */
+            #dice-box { bottom: 2%; } 
+            #status-text { bottom: calc(2% + 100px); }
         }
     </style>
 </head>
@@ -247,21 +249,26 @@
         <div id="minimap-container" class="glass-panel">
             <canvas id="minimap-canvas" width="100" height="100"></canvas>
         </div>
+
         <div id="stats-panel" class="glass-panel">
             <div style="font-size:0.7rem; opacity:0.7; margin-bottom:5px;">LIVE STATS</div>
             <div class="stat-row"><span>MOVES:</span> <span class="stat-val" id="stat-moves">0</span></div>
             <div class="stat-row"><span>KILLS:</span> <span class="stat-val" id="stat-kills">0</span></div>
         </div>
+
         <div id="theme-fab" class="glass-panel" onclick="toggleTheme(this)">
             <i class="fas fa-moon" id="theme-icon"></i>
         </div>
+
         <div class="badges-container">
-            <div class="player-badge active" id="badge0" data-p="0"><i class="fas fa-user p-icon" style="color:var(--red)"></i><span class="p-name" id="p0-name">YOU</span><div class="p-dots" id="dots0"></div></div>
-            <div class="player-badge" id="badge1" data-p="1"><i class="fas fa-robot p-icon" style="color:var(--green)"></i><span class="p-name">CPU</span><div class="p-dots" id="dots1"></div></div>
-            <div class="player-badge" id="badge2" data-p="2"><i class="fas fa-robot p-icon" style="color:var(--yellow)"></i><span class="p-name">CPU</span><div class="p-dots" id="dots2"></div></div>
-            <div class="player-badge" id="badge3" data-p="3"><i class="fas fa-robot p-icon" style="color:var(--blue)"></i><span class="p-name">CPU</span><div class="p-dots" id="dots3"></div></div>
+            <div class="player-badge active" id="p0" data-p="0"><i class="fas fa-user p-icon" style="color:var(--red)"></i><span class="p-name" id="p0-name">YOU</span><div class="p-dots" id="dots0"></div></div>
+            <div class="player-badge" id="p1" data-p="1"><i class="fas fa-robot p-icon" style="color:var(--green)"></i><span class="p-name">CPU</span><div class="p-dots" id="dots1"></div></div>
+            <div class="player-badge" id="p2" data-p="2"><i class="fas fa-robot p-icon" style="color:var(--yellow)"></i><span class="p-name">CPU</span><div class="p-dots" id="dots2"></div></div>
+            <div class="player-badge" id="p3" data-p="3"><i class="fas fa-robot p-icon" style="color:var(--blue)"></i><span class="p-name">CPU</span><div class="p-dots" id="dots3"></div></div>
         </div>
+
         <div id="status-text" class="glass-panel">YOUR TURN</div>
+
         <div id="settings-btn" class="glass-panel" onclick="toggleSettingsMenu()">
             <i class="fas fa-cog"></i>
         </div>
@@ -278,7 +285,7 @@
                 <span>Sound</span>
                 <div class="toggle-switch on" onclick="toggleSwitch('sound', this)"><div class="toggle-knob"></div></div>
             </div>
-            <div class="setting-row">
+             <div class="setting-row">
                 <span>Music</span>
                 <div class="toggle-switch on" onclick="toggleSwitch('music', this)"><div class="toggle-knob"></div></div>
             </div>
@@ -300,10 +307,21 @@
             <p style="margin-bottom:20px; opacity:0.8; font-weight:500; letter-spacing:1px;">CONTEST EDITION</p>
             <button class="btn-start" id="startBtn">PLAY GAME</button>
             <button class="btn-secondary" onclick="openRules()">HOW TO PLAY</button>
-             <p style="margin-top:10px; font-size:12px; opacity:0.6; color:white;">Tap anywhere to enable sound</p>
+            
+            <div class="about-text" style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; font-size: 0.85rem; opacity: 0.9; line-height: 1.5; color: #ddd;">
+                <p>Developed by <strong style="color:white;">Babatunde Oremakinde</strong><br>for Nairaland 3D Ludo contest</p>
+                <div style="margin-top: 10px;">
+                    Checkout my business:<br>
+                    <a href="https://thehorrorbrand.com" target="_blank" style="color: #ffd700; text-decoration: none; font-weight:600;">Thehorrorbrand.com</a>
+                </div>
+                <div style="margin-top: 5px;">
+                    Instagram: <a href="https://instagram.com/Thehorrorbrand" target="_blank" style="color: #ffd700; text-decoration: none; font-weight:600;">@Thehorrorbrand</a>
+                </div>
+            </div>
+            <p style="margin-top:10px; font-size:12px; opacity:0.6; color:white;">Tap anywhere to enable sound</p>
         </div>
     </div>
-    
+
     <div id="name-modal">
         <div class="welcome-card glass-panel">
             <h2 class="modal-title" style="margin-bottom:10px;">Who is playing?</h2>
@@ -339,25 +357,21 @@
         const COLORS = [0xff4757, 0x2ed573, 0xffa502, 0x1e90ff];
         const HEX_STRINGS = ['#ff4757', '#2ed573', '#ffa502', '#1e90ff'];
         const NAMES = ['YOU', 'GREEN', 'YELLOW', 'BLUE'];
+        const BOARD_SIZE = 15;
+        const CELL_SIZE = 1; 
         
         let scene, camera, renderer, raycaster, mouse;
-        let pieces = [], boardGroup, stars, clouds, sun;
-        let currentPlayer = 0;
-        let gameState = 'MENU'; 
-        let diceValue = 1;
-        let soundEnabled = true;
-        let musicEnabled = true;
-        let dayMode = false;
-        let validMoves = [];
+        let board = [], pieces = [], stars, clouds, sun;
+        let currentPlayer = 0, diceValue = 1, gameState = 'MENU';
+        let validMoves = [], glowingPieces = [];
+        let diceScene, diceCamera, diceRenderer, diceMesh;
+        let diceRotX = 0, diceRotY = 0, diceRotZ = 0;
+        let soundEnabled = true, musicEnabled = true, dayMode = false;
         let orbitAngle = 0;
         let gameStats = { moves: 0, kills: 0 };
         let introInterval;
         let musicInterval;
         
-        // DICE SCENE VARS
-        let diceScene, diceCamera, diceRenderer, diceMesh;
-        let diceRotX = 0, diceRotY = 0, diceRotZ = 0;
-
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let ctx;
 
@@ -371,21 +385,17 @@
             let noteIdx = 0;
             const introNotes = [261.63, 329.63, 392.00, 493.88]; 
             musicInterval = setInterval(() => {
-                if(gameState !== 'MENU' && gameState !== 'TURN_START' && gameState !== 'ROLLING' && gameState !== 'MOVING' && gameState !== 'WAITING_INPUT' && gameState !== 'AI_THINKING') { 
-                     // Stop only if completely out of game flow, but we want bg music
-                }
-                if(soundEnabled && musicEnabled && ctx) {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.frequency.setValueAtTime(introNotes[noteIdx % 4], ctx.currentTime);
-                    osc.type = 'triangle';
-                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
-                    osc.connect(gain); gain.connect(ctx.destination);
-                    osc.start(); osc.stop(ctx.currentTime + 1.5);
-                    noteIdx++;
-                }
-            }, 500);
+                if(!musicEnabled || !ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.frequency.setValueAtTime(introNotes[noteIdx % 4], ctx.currentTime);
+                osc.type = 'triangle';
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 1.5);
+                noteIdx++;
+            }, 500); 
         }
 
         const sfx = {
@@ -398,7 +408,7 @@
                 const noise = ctx.createBufferSource();
                 noise.buffer = buffer;
                 const gain = ctx.createGain();
-                gain.gain.setValueAtTime(0.4, ctx.currentTime);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                 noise.connect(gain); gain.connect(ctx.destination);
                 noise.start();
@@ -465,20 +475,29 @@
             [{x:13,y:1}, {x:10,y:1}, {x:13,y:4}, {x:10,y:4}], 
             [{x:13,y:13}, {x:10,y:13}, {x:13,y:10}, {x:10,y:10}] 
         ];
+        const safePos = [[6,2],[2,6],[1,8],[6,12],[8,13],[12,8],[13,6],[8,1]];
+        // CORRECTED START POSITIONS TO MATCH BOARD COLORS
+        const startPos = {
+            0: [[1,10],[1,13],[4,10],[4,13]],  // Red (Bottom-Left)
+            1: [[1,1],[1,4],[4,1],[4,4]],      // Green (Top-Left)
+            2: [[10,1],[10,4],[13,1],[13,4]],  // Yellow (Top-Right)
+            3: [[10,10],[10,13],[13,10],[13,13]] // Blue (Bottom-Right)
+        };
 
         function init() {
-            // Main Scene
             const cvs = document.getElementById('gameCanvas');
             renderer = new THREE.WebGLRenderer({ canvas: cvs, antialias: true, alpha: true });
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             
             scene = new THREE.Scene();
             scene.fog = new THREE.FogExp2(0x0f0c29, 0.03); 
             
             camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
-            camera.position.set(0, 30, 20);
+            camera.position.set(0, 30, 20); 
+            camera.lookAt(0, 0, 0); 
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
             const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -491,9 +510,7 @@
             createPieces();
             createStars();
             createEnvironment(); 
-            
-            // Dice Scene (THREE.JS)
-            createDice();
+            createDice(); 
 
             raycaster = new THREE.Raycaster();
             mouse = new THREE.Vector2();
@@ -502,45 +519,36 @@
             window.addEventListener('touchstart', onPieceClick, {passive: false});
             window.addEventListener('mousedown', onPieceClick);
             
-            // FIXED BUTTON ID
             document.getElementById('startBtn').addEventListener('click', showNameInput);
-            
+
             onResize();
             animate();
         }
 
-        // THREE.JS DICE SETUP
         function createDice() {
             const canvas = document.getElementById('diceCanvas');
             const box = document.getElementById('dice-box');
             diceScene = new THREE.Scene();
-            diceCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-            diceCamera.position.z = 5;
+            diceCamera = new THREE.PerspectiveCamera(45, box.clientWidth/box.clientHeight, 0.1, 100);
+            diceCamera.position.z = 6; diceCamera.position.y = 2; diceCamera.lookAt(0,0,0);
             
             diceRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-            diceRenderer.setSize(120, 120); 
+            diceRenderer.setSize(box.clientWidth, box.clientHeight);
             
-            const amb = new THREE.AmbientLight(0xffffff, 0.8);
-            diceScene.add(amb);
-            const dir = new THREE.DirectionalLight(0xffffff, 0.8);
-            dir.position.set(5, 5, 5);
-            diceScene.add(dir);
+            const amb = new THREE.AmbientLight(0xffffff, 0.7); diceScene.add(amb);
+            const dir = new THREE.DirectionalLight(0xffffff, 0.8); dir.position.set(5, 5, 5); diceScene.add(dir);
 
-            const geometry = new THREE.BoxGeometry(2.0, 2.0, 2.0); // Slightly larger
-            
+            const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5); 
             const materials = [];
             for (let i = 1; i <= 6; i++) {
-                const cvs = document.createElement('canvas');
-                cvs.width = 128; cvs.height = 128;
+                const cvs = document.createElement('canvas'); cvs.width = 128; cvs.height = 128;
                 const ctx = cvs.getContext('2d');
                 ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,128,128);
-                ctx.fillStyle = '#000000';
-                drawDots(ctx, i);
                 ctx.strokeStyle = '#cccccc'; ctx.lineWidth = 5; ctx.strokeRect(0,0,128,128);
+                ctx.fillStyle = '#000000'; drawDots(ctx, i);
                 const tex = new THREE.CanvasTexture(cvs);
                 materials.push(new THREE.MeshStandardMaterial({ map: tex }));
             }
-            
             diceMesh = new THREE.Mesh(geometry, materials);
             diceScene.add(diceMesh);
             diceMesh.rotation.x = Math.PI/2; 
@@ -588,6 +596,7 @@
             boardGroup = new THREE.Group();
             const base = new THREE.Mesh(new THREE.BoxGeometry(16, 0.5, 16), new THREE.MeshStandardMaterial({color: 0x1a1a1a}));
             base.position.y = -0.25; base.receiveShadow = true;
+            base.position.set(0, -0.25, 0);
             boardGroup.add(base);
 
             const cellGeo = new THREE.BoxGeometry(0.95, 0.1, 0.95);
@@ -620,27 +629,45 @@
             }
             scene.add(boardGroup);
         }
+        
+        function getCellColor(x, z) {
+            if (x >= 0 && x <= 5 && z >= 0 && z <= 5) return 0xff4444; 
+            if (x >= 0 && x <= 5 && z >= 9 && z <= 14) return 0x44ff44; 
+            if (x >= 9 && x <= 14 && z >= 9 && z <= 14) return 0xffff44; 
+            if (x >= 9 && x <= 14 && z >= 0 && z <= 5) return 0x4444ff; 
+            if (x === 7 || z === 7) return 0xe8e8e8;
+            if ((x === 6 || x === 8) && (z >= 1 && z <= 13)) return 0xf0f0f0;
+            if ((z === 6 || z === 8) && (x >= 1 && x <= 13)) return 0xf0f0f0;
+            return 0xcccccc;
+        }
 
         function createPieces() {
-            const points = [];
-            points.push(new THREE.Vector2(0,0)); points.push(new THREE.Vector2(0.35,0));
-            points.push(new THREE.Vector2(0.35,0.2)); points.push(new THREE.Vector2(0.2,0.5));
-            points.push(new THREE.Vector2(0,0.6));
-            const geo = new THREE.LatheGeometry(points, 20); geo.translate(0,0,0);
-
-            for(let p=0; p<4; p++) {
-                pieces[p] = [];
-                for(let i=0; i<4; i++) {
-                    const mat = new THREE.MeshStandardMaterial({color: COLORS[p], metalness:0.3, roughness:0.2});
-                    const mesh = new THREE.Mesh(geo, mat);
-                    mesh.castShadow = true;
-                    const ring = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.5, 32), new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, opacity:0}));
-                    ring.rotation.x = -Math.PI/2; ring.position.y = 0.02;
-                    mesh.add(ring);
-                    mesh.userData = { p: p, id: i, step: -1, ring: ring };
-                    mesh.position.set(YARDS[p][i].x - 7, 0, YARDS[p][i].y - 7);
-                    scene.add(mesh);
-                    pieces[p].push(mesh);
+            for (let player = 0; player < 4; player++) {
+                pieces[player] = [];
+                for (let i = 0; i < 4; i++) {
+                    const points = [];
+                    points.push(new THREE.Vector2(0,0)); 
+                    points.push(new THREE.Vector2(0.35,0));
+                    points.push(new THREE.Vector2(0.35,0.2)); 
+                    points.push(new THREE.Vector2(0.2,0.5));
+                    points.push(new THREE.Vector2(0,0.6));
+                    const geo = new THREE.LatheGeometry(points, 20);
+                    
+                    const mat = new THREE.MeshStandardMaterial({ color: COLORS[player], metalness: 0.3, roughness: 0.4 });
+                    const piece = new THREE.Mesh(geo, mat);
+                    const pos = startPos[player][i];
+                    
+                    piece.position.set(pos[0] * CELL_SIZE - 7, 0, pos[1] * CELL_SIZE - 7);
+                    
+                    piece.castShadow = true;
+                    piece.userData = { player, index: i, step: -1, ring: null }; // using 'step' logic from stable
+                    
+                    const ringGeo = new THREE.TorusGeometry(0.45, 0.08, 16, 32);
+                    const ringMat = new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0 });
+                    const ring = new THREE.Mesh(ringGeo, ringMat);
+                    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05;
+                    piece.add(ring); piece.userData.ring = ring;
+                    scene.add(piece); pieces[player][i] = piece;
                 }
             }
         }
@@ -649,7 +676,7 @@
             const safes = [[6,13],[8,1],[1,8],[13,6],[8,12],[6,2],[2,6],[12,8]];
             safes.forEach(pos => {
                 const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.15), new THREE.MeshBasicMaterial({color: 0xffd700}));
-                star.position.set(pos[0]-7, 0.3, pos[1]-7);
+                star.position.set(pos[0]*CELL_SIZE - 7, 0.2, pos[1]*CELL_SIZE - 7);
                 scene.add(star);
                 gsap.to(star.position, {y: 0.5, duration: 1, yoyo: true, repeat: -1});
                 gsap.to(star.rotation, {y: Math.PI, duration: 2, repeat: -1, ease: "none"});
@@ -670,6 +697,7 @@
             NAMES[0] = name;
             
             document.getElementById('p0-name').textContent = name;
+            
             document.getElementById('name-modal').style.display = 'none';
             document.getElementById('ui-layer').style.opacity = 1;
             gameState = 'TURN_START';
@@ -680,13 +708,24 @@
         function startTurn() {
             gameState = 'TURN_START';
             document.querySelectorAll('.player-badge').forEach(b => b.classList.remove('active'));
-            document.getElementById(`badge${currentPlayer}`).classList.add('active');
-            focusCamera(currentPlayer);
+            document.getElementById(`p${currentPlayer}`).classList.add('active');
             
-            diceMesh.material.forEach(m => m.color.setHex(0xffffff)); 
+            // CAMERA ROTATION (Stable)
+            const angles = [{x:0,z:20}, {x:-15,z:7}, {x:0,z:-15}, {x:15,z:7}];
+            const view = angles[currentPlayer];
             
+            // Mobile Zoom check
+            let yPos = window.innerWidth < 768 ? 55 : 30; // 55 for mobile zoom out
+            let dist = window.innerWidth < 768 ? 1.4 : 1;
+
+            gsap.to(camera.position, {
+                x: view.x * dist, z: view.z * dist, y: yPos, 
+                duration: 1.5, ease: "power2.inOut",
+                onUpdate: () => camera.lookAt(0,0,0)
+            });
+
             if(currentPlayer === 0) {
-                setStatus("YOUR TURN");
+                setStatus(`${NAMES[0]}'S TURN`);
             } else {
                 setStatus(`${NAMES[currentPlayer]}...`);
                 setTimeout(aiRoll, 1000);
@@ -740,7 +779,15 @@
         }
 
         function checkValidMoves() {
-            validMoves = getValidMoves(currentPlayer, diceValue);
+            validMoves = []; 
+            pieces[currentPlayer].forEach(p => {
+                if(p.userData.step === -1 && diceValue === 6) validMoves.push(p);
+                else if(p.userData.step !== -1) {
+                    const dest = p.userData.step + diceValue;
+                    if(dest < PATHS[currentPlayer].length) validMoves.push(p);
+                }
+            });
+
             if(validMoves.length === 0) {
                 setStatus(`NO MOVES`); setTimeout(endTurn, 1000);
             } else {
@@ -770,86 +817,43 @@
 
         function movePiece(piece) {
             gameState = 'MOVING'; highlightPieces(false);
-            if(currentPlayer === 0) { gameStats.moves++; updateStatsUI(); }
-            let cur = piece.userData.step;
-            let target = cur + diceValue;
-            if(cur === -1) {
-                jumpPiece(piece, PATHS[currentPlayer][0].x, PATHS[currentPlayer][0].y, () => {
-                    piece.userData.step = 0; checkTurnEnd(true); 
-                });
-            } else {
-                let step = 1;
-                const doStep = () => {
-                    if(step <= diceValue) {
-                        const next = PATHS[currentPlayer][cur + step];
-                        if(!next) { checkTurnEnd(false); return; }
-                        jumpPiece(piece, next.x, next.y, () => {
-                            step++;
-                            if(step > diceValue) { piece.userData.step = target; handleLanding(piece); } 
-                            else doStep();
-                        });
+            if(currentPlayer === 0) { gameStats.moves++; if(document.getElementById('stat-moves')) document.getElementById('stat-moves').textContent = gameStats.moves; }
+            
+            const start = piece.userData.step;
+            const target = start === -1 ? 0 : start + diceValue;
+            
+            // Animate
+            const path = PATHS[currentPlayer];
+            const dest = path[target];
+            if(!dest) { checkTurnEnd(false); return; }
+            
+            const jumpDuration = 0.5;
+            gsap.to(piece.position, {
+                x: dest.x * CELL_SIZE - 7,
+                z: dest.y * CELL_SIZE - 7,
+                duration: jumpDuration,
+                ease: "power2.out",
+                onComplete: () => {
+                    piece.userData.step = target;
+                    if(target >= path.length-1) {
+                         // piece.userData.isHome = true;
+                         sfx.win();
                     }
-                };
-                doStep();
-            }
-        }
-
-        function jumpPiece(piece, tx, ty, onComplete) {
+                    if(diceValue === 6) { setStatus("ROLL AGAIN"); gameState = 'TURN_START'; startTurn(); }
+                    else endTurn();
+                }
+            });
+            gsap.to(piece.position, { y: 1.5, duration: jumpDuration/2, yoyo: true, repeat: 1 });
             sfx.move();
-            const tl = gsap.timeline({onComplete: onComplete});
-            tl.to(piece.position, { x: tx-7, z: ty-7, duration: 0.2, ease: "linear" }, 0);
-            tl.to(piece.position, { y: 1.5, duration: 0.1, yoyo: true, repeat: 1, ease: "power1.out" }, 0);
         }
 
-        function handleLanding(piece) {
-            if(piece.userData.step >= PATHS[currentPlayer].length - 1) {
-                sfx.win(); updateBadgeDots(currentPlayer);
-                if(pieces[currentPlayer].every(p => p.userData.step >= PATHS[currentPlayer].length - 1)) {
-                    document.getElementById('winner-name').innerText = `${NAMES[currentPlayer]} WINS!`;
-                    document.getElementById('win-modal').style.display = 'flex'; return;
-                }
-                checkTurnEnd(true); return;
-            }
-            const px = Math.round(piece.position.x + 7);
-            const py = Math.round(piece.position.z + 7);
-            const isSafe = (px==6&&py==13)||(px==8&&py==1)||(px==1&&py==8)||(px==13&&py==6)||(px==8&&py==12)||(px==6&&py==2)||(px==2&&py==6)||(px==12&&py==8);
-            let captured = false;
-            if(!isSafe) {
-                for(let op=0; op<4; op++) {
-                    if(op === currentPlayer) continue;
-                    pieces[op].forEach(en => {
-                        const ex = Math.round(en.position.x + 7);
-                        const ey = Math.round(en.position.z + 7);
-                        if(ex === px && ey === py && en.userData.step !== -1) {
-                            captureAnim(en); captured = true;
-                            if(currentPlayer === 0) { gameStats.kills++; updateStatsUI(); }
-                        }
-                    });
-                }
-            }
-            if(captured) { setStatus("CAPTURE! BONUS!"); setTimeout(() => checkTurnEnd(true), 1000); }
-            else checkTurnEnd(diceValue === 6);
+        function endTurn() { 
+            currentPlayer = (currentPlayer + 1) % 4; 
+            startTurn(); 
         }
-
-        function captureAnim(piece) {
-            sfx.kill();
-            piece.userData.step = -1;
-            const h = YARDS[piece.userData.p][piece.userData.id];
-            gsap.to(piece.position, {x: h.x-7, z: h.y-7, y: 5, duration: 0.6, ease: "back.in(1.7)", onComplete: ()=>piece.position.y=0});
-        }
-
-        function checkTurnEnd(bonus) {
-            if(bonus) { gameState = 'TURN_START'; startTurn(); } else endTurn();
-        }
-        function endTurn() { currentPlayer = (currentPlayer + 1) % 4; startTurn(); }
 
         function getValidMoves(pid, roll) {
-            let res = [];
-            pieces[pid].forEach(p => {
-                if(p.userData.step === -1) { if(roll === 6) res.push(p); }
-                else if(p.userData.step + roll < PATHS[pid].length) res.push(p);
-            });
-            return res;
+            return [];
         }
         function highlightPieces(on) {
             validMoves.forEach(p => {
@@ -860,6 +864,7 @@
         }
         function updateBadgeDots(pid) {
             const el = document.getElementById(`dots${pid}`); el.innerHTML = '';
+            // Simple logic for dots
             const c = pieces[pid].filter(p => p.userData.step >= PATHS[pid].length - 1).length;
             for(let i=0; i<4; i++) {
                 const d = document.createElement('div'); d.className = 'dot' + (i<c ? ' home' : ''); el.appendChild(d);
@@ -873,25 +878,14 @@
             const el = document.getElementById('status-text'); el.textContent = text;
             el.style.borderColor = HEX_STRINGS[currentPlayer]; el.classList.add('show');
         }
-        function focusCamera(pid) {
-            const isMobile = window.innerWidth < 768;
-            const yHeight = isMobile ? 38 : 22; 
-            const dist = isMobile ? 10 : 18;
-            const angles = [{x:0,z:dist}, {x:-dist,z:0}, {x:0,z:-dist}, {x:dist,z:0}];
-            gsap.to(camera.position, {
-                x: angles[pid].x, z: angles[pid].z, y: yHeight,
-                duration: 1.5, ease: "power2.inOut",
-                onUpdate: () => camera.lookAt(0,0,0)
-            });
-        }
         function drawMinimap() {
             const ctx = document.getElementById('minimap-canvas').getContext('2d');
             ctx.fillStyle = dayMode ? '#e0e7ff' : '#1a1a1a'; ctx.fillRect(0,0,100,100);
             pieces.forEach(row => row.forEach(p => {
-                if(p.userData.step >= PATHS[p.userData.p].length-1) return;
-                const x = ((p.position.x+7)/14)*80 + 10;
-                const y = ((p.position.z+7)/14)*80 + 10;
-                ctx.fillStyle = HEX_STRINGS[p.userData.p];
+                // Correct mapping from -7 to +7
+                const x = ((p.position.x + 7)/14)*80 + 10;
+                const y = ((p.position.z + 7)/14)*80 + 10;
+                ctx.fillStyle = HEX_STRINGS[p.userData.player];
                 ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
             }));
         }
@@ -946,12 +940,16 @@
         function onResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
+            const box = document.getElementById('dice-box');
+            if(diceRenderer) diceRenderer.setSize(box.clientWidth, box.clientHeight);
             
-            // MOBILE FIX: Zoom out camera by increasing Y position
+            // MOBILE ADJUSTMENT
             if (window.innerWidth < 768) {
-                camera.position.set(0, 55, 20); // Zoomed out for Mobile
+                 camera.position.set(0, 55, 20); // Zoomed out
+                 camera.lookAt(0, 0, 0); 
             } else {
-                camera.position.set(0, 30, 20); // Standard for PC
+                 camera.position.set(0, 30, 20); 
+                 camera.lookAt(0, 0, 0);
             }
         }
         function animate() {
@@ -961,7 +959,6 @@
             if(diceRenderer && diceScene && diceCamera) {
                 diceRenderer.render(diceScene, diceCamera);
             }
-            
             drawMinimap();
             
             if(gameState === 'MENU') {
@@ -974,10 +971,9 @@
                 c.position.x += 0.02;
                 if(c.position.x > 30) c.position.x = -30;
                 
-                // Fade logic for clouds
                 const dist = Math.abs(c.position.x);
                 let targetOpacity = 0.9;
-                if (dist < 12) targetOpacity = 0.15; // Increased transparency over board
+                if (dist < 12) targetOpacity = 0.15; 
                 c.children.forEach(puff => {
                     puff.material.opacity += (targetOpacity - puff.material.opacity) * 0.05;
                 });
