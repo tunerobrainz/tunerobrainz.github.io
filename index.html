@@ -10,8 +10,10 @@
         
         :root {
             /* NIGHT THEME (Default) */
-            --bg-color: #0f0c29; --text-color: #ffffff;
-            --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(255, 255, 255, 0.15);
+            --bg-color: #0f0c29;
+            --text-color: #ffffff;
+            --glass-bg: rgba(15, 23, 42, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.15);
             --shadow-color: rgba(0,0,0,0.5);
             
             --red: #ff4757; --green: #2ed573; --yellow: #ffa502; --blue: #1e90ff;
@@ -19,8 +21,10 @@
 
         /* DAY THEME */
         body.day-mode {
-            --bg-color: #87CEEB; --text-color: #1e293b;
-            --glass-bg: rgba(255, 255, 255, 0.65); --glass-border: rgba(255, 255, 255, 0.6);
+            --bg-color: #87CEEB;
+            --text-color: #1e293b;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.6);
             --shadow-color: rgba(0,0,0,0.2);
         }
 
@@ -229,8 +233,8 @@
             #minimap-container { width: 80px; height: 80px; }
             
             /* PUSH TO ABSOLUTE BOTTOM */
-            #dice-box { bottom: 10px; } 
-            #status-text { bottom: 120px; }
+            #dice-box { bottom: 2%; } 
+            #status-text { bottom: calc(2% + 110px); }
         }
     </style>
 </head>
@@ -355,7 +359,7 @@
         
         let scene, camera, renderer, raycaster, mouse;
         let board = [], pieces = [], stars, clouds, sun;
-        let ambientLight, sunLight; // Store lights for dynamic update
+        let ambientLight, sunLight;
         let currentPlayer = 0, diceValue = 1, gameState = 'MENU';
         let validMoves = [], glowingPieces = [];
         let diceScene, diceCamera, diceRenderer, diceMesh;
@@ -493,11 +497,11 @@
             camera.position.set(0, 30, 20); 
             camera.lookAt(0, 0, 0); 
 
-            // GLOBAL LIGHT VARIABLES for Dynamic Theme
-            ambientLight = new THREE.AmbientLight(0xffffff, 0.85); // High Night Intensity
+            // DYNAMIC LIGHTS
+            ambientLight = new THREE.AmbientLight(0xffffff, 1.3); // High Visibility Night
             scene.add(ambientLight);
             
-            sunLight = new THREE.DirectionalLight(0xffffff, 0.8); // Standard Night Sun
+            sunLight = new THREE.DirectionalLight(0xffffff, 0.5); // Subtle Shadows Night
             sunLight.position.set(10, 20, 10);
             sunLight.castShadow = true;
             sunLight.shadow.mapSize.width = 1024; sunLight.shadow.mapSize.height = 1024;
@@ -598,10 +602,10 @@
             boardGroup.add(base);
 
             const cellGeo = new THREE.BoxGeometry(0.95, 0.1, 0.95);
-            // Slightly off-white for better Day Mode contrast
-            const whiteMat = new THREE.MeshStandardMaterial({color: 0xf0f0f0, roughness: 0.5});
+            const whiteMat = new THREE.MeshStandardMaterial({color: 0xf0f0f0, roughness: 0.6});
+            
             const createCell = (x, y, color) => {
-                const mesh = new THREE.Mesh(cellGeo, color ? new THREE.MeshStandardMaterial({color, roughness: 0.5}) : whiteMat);
+                const mesh = new THREE.Mesh(cellGeo, color ? new THREE.MeshStandardMaterial({color}) : whiteMat);
                 mesh.position.set(x - 7, 0.05, y - 7);
                 mesh.receiveShadow = true;
                 boardGroup.add(mesh);
@@ -653,7 +657,7 @@
                     points.push(new THREE.Vector2(0,0.6));
                     const geo = new THREE.LatheGeometry(points, 20);
                     
-                    const mat = new THREE.MeshStandardMaterial({ color: COLORS[player], roughness: 0.4, metalness: 0.2 });
+                    const mat = new THREE.MeshStandardMaterial({ color: COLORS[player], metalness: 0.3, roughness: 0.4 });
                     const piece = new THREE.Mesh(geo, mat);
                     const pos = startPos[player][i];
                     
@@ -819,14 +823,12 @@
             let target = cur + diceValue;
 
             if(cur === -1) {
-                // Moving out of base
                 let startTile = PATHS[currentPlayer][0];
                 jumpPiece(piece, startTile.x, startTile.y, () => {
                     piece.userData.step = 0;
                     checkTurnEnd(true); 
                 });
             } else {
-                // Walking path
                 let stepsTaken = 0;
                 function doStep() {
                     if (stepsTaken < diceValue) {
@@ -893,7 +895,7 @@
         function captureAnim(piece) {
             sfx.kill();
             piece.userData.step = -1;
-            const h = YARDS[piece.userData.player][piece.userData.index]; // use stored user data
+            const h = YARDS[piece.userData.player][piece.userData.index];
             gsap.to(piece.position, {x: h.x * CELL_SIZE - 7, z: h.y * CELL_SIZE - 7, y: 5, duration: 0.6, ease: "back.in(1.7)", onComplete: ()=>piece.position.y=0});
         }
 
@@ -903,12 +905,7 @@
         function endTurn() { currentPlayer = (currentPlayer + 1) % 4; startTurn(); }
 
         function getValidMoves(pid, roll) {
-            let res = [];
-            pieces[pid].forEach(p => {
-                if(p.userData.step === -1) { if(roll === 6) res.push(p); }
-                else if(p.userData.step + roll < PATHS[pid].length) res.push(p);
-            });
-            return res;
+            return [];
         }
         function highlightPieces(on) {
             validMoves.forEach(p => {
@@ -965,18 +962,16 @@
                 if(switchEl) switchEl.classList.add('on');
                 // LIGHTS FOR DAY
                 ambientLight.intensity = 0.6; 
-                sunLight.intensity = 1.0;
-                sunLight.position.set(-20, 50, -20);
+                sunLight.intensity = 1.2;
             } else {
                 document.body.classList.remove('day-mode');
                 icon.className = 'fas fa-moon'; icon.style.color = '#ffffff';
                 if(switchEl) switchEl.classList.remove('on');
                 // LIGHTS FOR NIGHT
-                ambientLight.intensity = 0.85; 
-                sunLight.intensity = 0.8;
-                sunLight.position.set(10, 20, 10);
+                ambientLight.intensity = 1.3; 
+                sunLight.intensity = 0.5;
             }
-            scene.fog = new THREE.FogExp2(dayMode ? 0x87CEEB : 0x0f0c29, dayMode ? 0.002 : 0.03);
+            scene.fog = new THREE.FogExp2(dayMode ? 0x87CEEB : 0x0f0c29, 0.03);
             if(dayMode) { scene.remove(stars); scene.add(clouds); scene.add(sun); }
             else { scene.add(stars); scene.remove(clouds); scene.remove(sun); }
         }
@@ -1009,7 +1004,7 @@
             
             // MOBILE ADJUSTMENT
             if (window.innerWidth < 768) {
-                 camera.position.set(0, 42, 25); // ZOOMED IN (lower Y) + Angle
+                 camera.position.set(0, 42, 25); // Lower Y to ZOOM IN + Make Board Bigger
                  camera.lookAt(0, 0, 0); 
             } else {
                  camera.position.set(0, 30, 20);
