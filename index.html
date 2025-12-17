@@ -209,14 +209,15 @@
         .rule-item { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; display:flex; gap:10px; }
         .rule-icon { color: #6C63FF; width: 20px; }
 
+        /* MOBILE ADJUSTMENTS (Lowered UI elements and Zoomed Out) */
         @media (max-width: 600px) {
             .game-title { font-size: 2.8rem; }
             #stats-panel { top: 110px; }
             .badges-container { top: 85px; } 
             #minimap-container { width: 80px; height: 80px; }
-            /* FIXED MOBILE POSITIONING */
-            #dice-box { bottom: 20px; }
-            #status-text { bottom: 140px; }
+            /* PUSH TO BOTTOM */
+            #dice-box { bottom: 5%; }
+            #status-text { bottom: calc(5% + 100px); }
         }
     </style>
 </head>
@@ -468,6 +469,8 @@
             
             document.getElementById('startBtn').addEventListener('click', startGame);
 
+            // Trigger resize to check for mobile
+            onResize();
             animate();
         }
 
@@ -911,6 +914,17 @@
         function onResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
+            const box = document.getElementById('dice-box');
+            if(diceRenderer) diceRenderer.setSize(box.clientWidth, box.clientHeight);
+            
+            // MOBILE ADJUSTMENT: Zoom out on small screens
+            if (window.innerWidth < 768) {
+                 camera.position.set(0, 50, 20); // Higher Y to zoom out
+                 camera.lookAt(0, 0, 0); // Keep centered
+            } else {
+                 camera.position.set(0, 30, 20); // Default PC view
+                 camera.lookAt(0, 0, 0);
+            }
         }
         function animate() {
             requestAnimationFrame(animate); 
