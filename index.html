@@ -19,10 +19,8 @@
 
         /* DAY THEME */
         body.day-mode {
-            --bg-color: #87CEEB;
-            --text-color: #1e293b;
-            --glass-bg: rgba(255, 255, 255, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.6);
+            --bg-color: #87CEEB; --text-color: #1e293b;
+            --glass-bg: rgba(255, 255, 255, 0.65); --glass-border: rgba(255, 255, 255, 0.6);
             --shadow-color: rgba(0,0,0,0.2);
         }
 
@@ -89,8 +87,7 @@
         .player-badge {
             display: flex; flex-direction: column; align-items: center;
             padding: 6px 8px; background: rgba(0,0,0,0.6); border-radius: 10px;
-            transition: all 0.3s; border: 2px solid transparent; min-width: 55px;
-            backdrop-filter: blur(5px);
+            transition: all 0.3s; border: 2px solid transparent; min-width: 45px;
         }
         body.day-mode .player-badge { background: rgba(255,255,255,0.7); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .player-badge.active { transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.2); background: rgba(255,255,255,0.15); }
@@ -99,9 +96,10 @@
         .player-badge.active[data-p="1"] { border-color: var(--green); }
         .player-badge.active[data-p="2"] { border-color: var(--yellow); }
         .player-badge.active[data-p="3"] { border-color: var(--blue); }
+        
         .p-icon { font-size: 1rem; margin-bottom: 2px; }
-        .p-name { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; margin-top: 2px; text-transform: uppercase; }
-        .p-dots { display: flex; gap: 2px; margin-top:2px;}
+        .p-name { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+        .p-dots { display: flex; gap: 2px; }
         .dot { width: 5px; height: 5px; border-radius: 50%; background: #444; }
         .dot.home { background: #ffd700; box-shadow: 0 0 4px #ffd700; }
         body.day-mode .dot.home { background: #f1c40f; box-shadow: none; }
@@ -111,14 +109,14 @@
             position: absolute; bottom: 30px; right: 20px;
             width: 45px; height: 45px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; cursor: pointer; z-index: 50;
+            font-size: 1.2rem; cursor: pointer; z-index: 60;
             padding-bottom: env(safe-area-inset-bottom);
         }
         #settings-menu {
             position: absolute; bottom: 90px; right: 20px;
             width: 200px; padding: 15px; display: flex; flex-direction: column; gap: 12px;
             transform: scale(0); transform-origin: bottom right; transition: transform 0.3s ease;
-            z-index: 49;
+            z-index: 59;
         }
         #settings-menu.open { transform: scale(1); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
@@ -139,27 +137,23 @@
             font-weight: 700; cursor: pointer; margin-top: 5px; width: 100%;
         }
 
-        /* --- THREE.JS DICE CONTAINER (Fixed Placement) --- */
+        /* --- THREE.JS DICE CONTAINER --- */
         #dice-box {
             position: absolute;
             bottom: 20px; 
             left: 50%; transform: translateX(-50%);
             width: 120px; height: 120px;
-            /* Z-INDEX BOOST: Higher than Status Text (10) */
             z-index: 50; 
             pointer-events: auto;
             cursor: pointer;
             padding-bottom: env(safe-area-inset-bottom);
         }
-        #diceCanvas {
-            width: 100%; height: 100%;
-            display: block;
-        }
+        #diceCanvas { width: 100%; height: 100%; display: block; }
 
-        /* STATUS TEXT (Anchored above dice) */
+        /* STATUS TEXT */
         #status-text {
             position: absolute; 
-            bottom: 140px; /* Clearance for dice + padding */
+            bottom: 140px; 
             left: 50%; transform: translateX(-50%);
             padding: 8px 25px; border-radius: 50px;
             font-weight: 800; font-size: 1rem; letter-spacing: 1px;
@@ -186,7 +180,7 @@
         .welcome-card { 
             text-align: center; padding: 40px; max-width: 450px; width: 85%;
             animation: float 6s ease-in-out infinite; 
-            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px; backdrop-filter: blur(10px);
             overflow-y: auto; max-height: 90vh;
         }
@@ -231,13 +225,12 @@
         @media (max-width: 600px) {
             .game-title { font-size: 2.8rem; }
             #stats-panel { top: 110px; }
-            /* Push badges down so they don't overlap Minimap */
             .badges-container { top: 90px; } 
             #minimap-container { width: 80px; height: 80px; }
             
             /* PUSH TO ABSOLUTE BOTTOM */
-            #dice-box { bottom: 2%; } 
-            #status-text { bottom: calc(2% + 100px); }
+            #dice-box { bottom: 10px; } 
+            #status-text { bottom: 120px; }
         }
     </style>
 </head>
@@ -362,6 +355,7 @@
         
         let scene, camera, renderer, raycaster, mouse;
         let board = [], pieces = [], stars, clouds, sun;
+        let ambientLight, sunLight; // Store lights for dynamic update
         let currentPlayer = 0, diceValue = 1, gameState = 'MENU';
         let validMoves = [], glowingPieces = [];
         let diceScene, diceCamera, diceRenderer, diceMesh;
@@ -476,12 +470,11 @@
             [{x:13,y:13}, {x:10,y:13}, {x:13,y:10}, {x:10,y:10}] 
         ];
         const safePos = [[6,2],[2,6],[1,8],[6,12],[8,13],[12,8],[13,6],[8,1]];
-        // CORRECTED START POSITIONS TO MATCH BOARD COLORS
         const startPos = {
-            0: [[1,10],[1,13],[4,10],[4,13]],  // Red (Bottom-Left)
-            1: [[1,1],[1,4],[4,1],[4,4]],      // Green (Top-Left)
-            2: [[10,1],[10,4],[13,1],[13,4]],  // Yellow (Top-Right)
-            3: [[10,10],[10,13],[13,10],[13,13]] // Blue (Bottom-Right)
+            0: [[1,10],[1,13],[4,10],[4,13]],  // Red
+            1: [[1,1],[1,4],[4,1],[4,4]],      // Green
+            2: [[10,1],[10,4],[13,1],[13,4]],  // Yellow
+            3: [[10,10],[10,13],[13,10],[13,13]] // Blue
         };
 
         function init() {
@@ -495,12 +488,16 @@
             scene = new THREE.Scene();
             scene.fog = new THREE.FogExp2(0x0f0c29, 0.03); 
             
+            // CAMERA
             camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
             camera.position.set(0, 30, 20); 
             camera.lookAt(0, 0, 0); 
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            // GLOBAL LIGHT VARIABLES for Dynamic Theme
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.85); // High Night Intensity
+            scene.add(ambientLight);
+            
+            sunLight = new THREE.DirectionalLight(0xffffff, 0.8); // Standard Night Sun
             sunLight.position.set(10, 20, 10);
             sunLight.castShadow = true;
             sunLight.shadow.mapSize.width = 1024; sunLight.shadow.mapSize.height = 1024;
@@ -521,10 +518,11 @@
             
             document.getElementById('startBtn').addEventListener('click', showNameInput);
 
-            onResize();
+            onResize(); 
             animate();
         }
 
+        // --- SOLID DICE ---
         function createDice() {
             const canvas = document.getElementById('diceCanvas');
             const box = document.getElementById('dice-box');
@@ -600,9 +598,10 @@
             boardGroup.add(base);
 
             const cellGeo = new THREE.BoxGeometry(0.95, 0.1, 0.95);
-            const whiteMat = new THREE.MeshStandardMaterial({color: 0xffffff});
+            // Slightly off-white for better Day Mode contrast
+            const whiteMat = new THREE.MeshStandardMaterial({color: 0xf0f0f0, roughness: 0.5});
             const createCell = (x, y, color) => {
-                const mesh = new THREE.Mesh(cellGeo, color ? new THREE.MeshStandardMaterial({color}) : whiteMat);
+                const mesh = new THREE.Mesh(cellGeo, color ? new THREE.MeshStandardMaterial({color, roughness: 0.5}) : whiteMat);
                 mesh.position.set(x - 7, 0.05, y - 7);
                 mesh.receiveShadow = true;
                 boardGroup.add(mesh);
@@ -640,6 +639,7 @@
             if ((z === 6 || z === 8) && (x >= 1 && x <= 13)) return 0xf0f0f0;
             return 0xcccccc;
         }
+        function isSafe(x, z) { return safePos.some(p => p[0] === x && p[1] === z); }
 
         function createPieces() {
             for (let player = 0; player < 4; player++) {
@@ -653,14 +653,14 @@
                     points.push(new THREE.Vector2(0,0.6));
                     const geo = new THREE.LatheGeometry(points, 20);
                     
-                    const mat = new THREE.MeshStandardMaterial({ color: COLORS[player], metalness: 0.3, roughness: 0.4 });
+                    const mat = new THREE.MeshStandardMaterial({ color: COLORS[player], roughness: 0.4, metalness: 0.2 });
                     const piece = new THREE.Mesh(geo, mat);
                     const pos = startPos[player][i];
                     
                     piece.position.set(pos[0] * CELL_SIZE - 7, 0, pos[1] * CELL_SIZE - 7);
                     
                     piece.castShadow = true;
-                    piece.userData = { player, index: i, step: -1, ring: null }; // using 'step' logic from stable
+                    piece.userData = { player, index: i, step: -1, ring: null }; 
                     
                     const ringGeo = new THREE.TorusGeometry(0.45, 0.08, 16, 32);
                     const ringMat = new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0 });
@@ -697,7 +697,6 @@
             NAMES[0] = name;
             
             document.getElementById('p0-name').textContent = name;
-            
             document.getElementById('name-modal').style.display = 'none';
             document.getElementById('ui-layer').style.opacity = 1;
             gameState = 'TURN_START';
@@ -710,17 +709,14 @@
             document.querySelectorAll('.player-badge').forEach(b => b.classList.remove('active'));
             document.getElementById(`p${currentPlayer}`).classList.add('active');
             
-            // CAMERA ROTATION (Stable)
             const angles = [{x:0,z:20}, {x:-15,z:7}, {x:0,z:-15}, {x:15,z:7}];
             const view = angles[currentPlayer];
             
-            // Mobile Zoom check
-            let yPos = window.innerWidth < 768 ? 55 : 30; // 55 for mobile zoom out
-            let dist = window.innerWidth < 768 ? 1.4 : 1;
+            let zoomY = (window.innerWidth < 768) ? 42 : 30; // Mobile: 42 (Zoomed In more)
 
             gsap.to(camera.position, {
-                x: view.x * dist, z: view.z * dist, y: yPos, 
-                duration: 1.5, ease: "power2.inOut",
+                x: view.x, z: view.z, y: zoomY, duration: 1.5,
+                ease: "power2.inOut",
                 onUpdate: () => camera.lookAt(0,0,0)
             });
 
@@ -779,12 +775,12 @@
         }
 
         function checkValidMoves() {
-            validMoves = []; 
+            validMoves = [];
             pieces[currentPlayer].forEach(p => {
-                if(p.userData.step === -1 && diceValue === 6) validMoves.push(p);
-                else if(p.userData.step !== -1) {
-                    const dest = p.userData.step + diceValue;
-                    if(dest < PATHS[currentPlayer].length) validMoves.push(p);
+                if(p.userData.step >= PATHS[currentPlayer].length - 1) return;
+                if(p.userData.step === -1) { if(diceValue === 6) validMoves.push(p); }
+                else {
+                    if(p.userData.step + diceValue < PATHS[currentPlayer].length) validMoves.push(p);
                 }
             });
 
@@ -819,41 +815,100 @@
             gameState = 'MOVING'; highlightPieces(false);
             if(currentPlayer === 0) { gameStats.moves++; if(document.getElementById('stat-moves')) document.getElementById('stat-moves').textContent = gameStats.moves; }
             
-            const start = piece.userData.step;
-            const target = start === -1 ? 0 : start + diceValue;
-            
-            // Animate
-            const path = PATHS[currentPlayer];
-            const dest = path[target];
-            if(!dest) { checkTurnEnd(false); return; }
-            
-            const jumpDuration = 0.5;
-            gsap.to(piece.position, {
-                x: dest.x * CELL_SIZE - 7,
-                z: dest.y * CELL_SIZE - 7,
-                duration: jumpDuration,
-                ease: "power2.out",
-                onComplete: () => {
-                    piece.userData.step = target;
-                    if(target >= path.length-1) {
-                         // piece.userData.isHome = true;
-                         sfx.win();
+            let cur = piece.userData.step;
+            let target = cur + diceValue;
+
+            if(cur === -1) {
+                // Moving out of base
+                let startTile = PATHS[currentPlayer][0];
+                jumpPiece(piece, startTile.x, startTile.y, () => {
+                    piece.userData.step = 0;
+                    checkTurnEnd(true); 
+                });
+            } else {
+                // Walking path
+                let stepsTaken = 0;
+                function doStep() {
+                    if (stepsTaken < diceValue) {
+                        stepsTaken++;
+                        let nextIndex = cur + stepsTaken;
+                        if(nextIndex >= PATHS[currentPlayer].length) { 
+                            piece.userData.step = PATHS[currentPlayer].length - 1;
+                            handleLanding(piece);
+                            return; 
+                        }
+                        
+                        let nextTile = PATHS[currentPlayer][nextIndex];
+                        jumpPiece(piece, nextTile.x, nextTile.y, () => {
+                            if (stepsTaken < diceValue) {
+                                doStep();
+                            } else {
+                                piece.userData.step = nextIndex;
+                                handleLanding(piece);
+                            }
+                        });
                     }
-                    if(diceValue === 6) { setStatus("ROLL AGAIN"); gameState = 'TURN_START'; startTurn(); }
-                    else endTurn();
                 }
-            });
-            gsap.to(piece.position, { y: 1.5, duration: jumpDuration/2, yoyo: true, repeat: 1 });
-            sfx.move();
+                doStep();
+            }
         }
 
-        function endTurn() { 
-            currentPlayer = (currentPlayer + 1) % 4; 
-            startTurn(); 
+        function jumpPiece(piece, tx, ty, onComplete) {
+            sfx.move();
+            const tl = gsap.timeline({onComplete: onComplete});
+            tl.to(piece.position, { x: tx * CELL_SIZE - 7, z: ty * CELL_SIZE - 7, duration: 0.2, ease: "linear" }, 0);
+            tl.to(piece.position, { y: 1.5, duration: 0.1, yoyo: true, repeat: 1, ease: "power1.out" }, 0);
         }
+
+        function handleLanding(piece) {
+            if(piece.userData.step >= PATHS[currentPlayer].length - 1) {
+                sfx.win(); updateBadgeDots(currentPlayer);
+                if(pieces[currentPlayer].every(p => p.userData.step >= PATHS[currentPlayer].length - 1)) {
+                    document.getElementById('winner-name').innerText = `${NAMES[currentPlayer]} WINS!`;
+                    document.getElementById('win-modal').style.display = 'flex'; return;
+                }
+                checkTurnEnd(true); return;
+            }
+            const px = Math.round(piece.position.x + 7);
+            const py = Math.round(piece.position.z + 7);
+            const isSafe = (px==6&&py==13)||(px==8&&py==1)||(px==1&&py==8)||(px==13&&py==6)||(px==8&&py==12)||(px==6&&py==2)||(px==2&&py==6)||(px==12&&py==8);
+            let captured = false;
+            if(!isSafe) {
+                for(let op=0; op<4; op++) {
+                    if(op === currentPlayer) continue;
+                    pieces[op].forEach(en => {
+                        const ex = Math.round(en.position.x + 7);
+                        const ey = Math.round(en.position.z + 7);
+                        if(ex === px && ey === py && en.userData.step !== -1) {
+                            captureAnim(en); captured = true;
+                            if(currentPlayer === 0) { gameStats.kills++; updateStatsUI(); }
+                        }
+                    });
+                }
+            }
+            if(captured) { setStatus("CAPTURE! BONUS!"); setTimeout(() => checkTurnEnd(true), 1000); }
+            else checkTurnEnd(diceValue === 6);
+        }
+
+        function captureAnim(piece) {
+            sfx.kill();
+            piece.userData.step = -1;
+            const h = YARDS[piece.userData.player][piece.userData.index]; // use stored user data
+            gsap.to(piece.position, {x: h.x * CELL_SIZE - 7, z: h.y * CELL_SIZE - 7, y: 5, duration: 0.6, ease: "back.in(1.7)", onComplete: ()=>piece.position.y=0});
+        }
+
+        function checkTurnEnd(bonus) {
+            if(bonus) { gameState = 'TURN_START'; startTurn(); } else endTurn();
+        }
+        function endTurn() { currentPlayer = (currentPlayer + 1) % 4; startTurn(); }
 
         function getValidMoves(pid, roll) {
-            return [];
+            let res = [];
+            pieces[pid].forEach(p => {
+                if(p.userData.step === -1) { if(roll === 6) res.push(p); }
+                else if(p.userData.step + roll < PATHS[pid].length) res.push(p);
+            });
+            return res;
         }
         function highlightPieces(on) {
             validMoves.forEach(p => {
@@ -863,16 +918,15 @@
             });
         }
         function updateBadgeDots(pid) {
-            const el = document.getElementById(`dots${pid}`); el.innerHTML = '';
-            // Simple logic for dots
+            const el = document.getElementById(`dots${pid}`); if(!el) return; el.innerHTML = '';
             const c = pieces[pid].filter(p => p.userData.step >= PATHS[pid].length - 1).length;
             for(let i=0; i<4; i++) {
                 const d = document.createElement('div'); d.className = 'dot' + (i<c ? ' home' : ''); el.appendChild(d);
             }
         }
         function updateStatsUI() {
-            document.getElementById('stat-moves').textContent = gameStats.moves;
-            document.getElementById('stat-kills').textContent = gameStats.kills;
+            if(document.getElementById('stat-moves')) document.getElementById('stat-moves').textContent = gameStats.moves;
+            if(document.getElementById('stat-kills')) document.getElementById('stat-kills').textContent = gameStats.kills;
         }
         function setStatus(text) {
             const el = document.getElementById('status-text'); el.textContent = text;
@@ -882,7 +936,7 @@
             const ctx = document.getElementById('minimap-canvas').getContext('2d');
             ctx.fillStyle = dayMode ? '#e0e7ff' : '#1a1a1a'; ctx.fillRect(0,0,100,100);
             pieces.forEach(row => row.forEach(p => {
-                // Correct mapping from -7 to +7
+                if(p.userData.step >= PATHS[p.userData.player].length-1) return;
                 const x = ((p.position.x + 7)/14)*80 + 10;
                 const y = ((p.position.z + 7)/14)*80 + 10;
                 ctx.fillStyle = HEX_STRINGS[p.userData.player];
@@ -903,14 +957,24 @@
             const icon = document.getElementById('theme-icon');
             const switchEl = document.getElementById('day-switch');
             dayMode = !dayMode;
+            
+            // DYNAMIC LIGHTING ADJUSTMENT
             if(dayMode) {
                 document.body.classList.add('day-mode');
                 icon.className = 'fas fa-sun'; icon.style.color = '#f1c40f';
                 if(switchEl) switchEl.classList.add('on');
+                // LIGHTS FOR DAY
+                ambientLight.intensity = 0.6; 
+                sunLight.intensity = 1.0;
+                sunLight.position.set(-20, 50, -20);
             } else {
                 document.body.classList.remove('day-mode');
                 icon.className = 'fas fa-moon'; icon.style.color = '#ffffff';
                 if(switchEl) switchEl.classList.remove('on');
+                // LIGHTS FOR NIGHT
+                ambientLight.intensity = 0.85; 
+                sunLight.intensity = 0.8;
+                sunLight.position.set(10, 20, 10);
             }
             scene.fog = new THREE.FogExp2(dayMode ? 0x87CEEB : 0x0f0c29, dayMode ? 0.002 : 0.03);
             if(dayMode) { scene.remove(stars); scene.add(clouds); scene.add(sun); }
@@ -945,10 +1009,10 @@
             
             // MOBILE ADJUSTMENT
             if (window.innerWidth < 768) {
-                 camera.position.set(0, 55, 20); // Zoomed out
+                 camera.position.set(0, 42, 25); // ZOOMED IN (lower Y) + Angle
                  camera.lookAt(0, 0, 0); 
             } else {
-                 camera.position.set(0, 30, 20); 
+                 camera.position.set(0, 30, 20);
                  camera.lookAt(0, 0, 0);
             }
         }
